@@ -47,7 +47,7 @@ export default function Filters(props:FilterProps) {
           className="border rounded-xl px-3 py-2 bg-white cursor-pointer"
         >
           {STATUSES.map(status => (
-            <option value={status.value}>{status.label}</option>
+            <option key={status.value} value={status.value}>{status.label}</option>
           ))}
         </select>
       </div>

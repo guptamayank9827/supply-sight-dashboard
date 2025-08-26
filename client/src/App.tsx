@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import TopBar from './components/TopBar';
 import KPICards from './components/KPICards';
@@ -36,6 +36,11 @@ function App() {
   const [search, setSearch] = useState<string>('');
   const [warehouse, setWarehouse] = useState<string>('');
   const [status, setStatus] = useState<StatusType | ''>('');
+  const [page, setPage] = useState<number>(1);
+
+  const filters = useMemo(() => (
+    { search, warehouse, status }
+  ), [search, warehouse, status]);
 
   const kpis = DUMMY_KPIS;
   const warehouses = DUMMY_WAREHOUSES;
@@ -69,7 +74,11 @@ function App() {
           setStatus={setStatus}
         />
 
-        <ProductsTable />
+        <ProductsTable
+          page={page}
+          filters={filters}
+          setPage={setPage}
+        />
 
       </main>
 
