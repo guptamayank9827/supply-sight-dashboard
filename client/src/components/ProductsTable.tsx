@@ -1,4 +1,7 @@
+import { useQuery } from '@apollo/client';
+
 import { FiltersType } from '../types/types';
+import { FETCH_PRODUCTS } from '../queries/queries';
 
 type ProductsTableProps = {
     page: number;
@@ -9,23 +12,21 @@ type ProductsTableProps = {
 
 const PAGE_SIZE = 10;
 
-const DUMMY_PRODUCTS = {
-    items: [
-        {demand: 120, id:"P-1001", name:"12mm Hex Bolt", sku:"HEX-12-100", status:"HEALTHY", stock:180, warehouse:"BLR-A"},
-        {demand: 80, id:"P-1002", name:"Steel Washer", sku:"WSR-08-500", status:"CRITICAL", stock:50, warehouse:"BLR-A"},
-        {demand: 80, id:"P-1003", name:"M8 Nut", sku:"NUT-08-200", status:"LOW", stock:80, warehouse:"PNQ-C"},
-        {demand: 120, id:"P-1004", name:"Bearing 608ZZ", sku:"BRG-608-50", status:"CRITICAL", stock:24, warehouse:"DEL-B"},
-        {demand: 120, id:"P-1005", name:"Bearing 609YY", sku:"BRG-608-50", status:"HEALTHY", stock:240, warehouse:"DEL-B"}
-    ]
-};
 
 export default function ProductsTable(props:ProductsTableProps) {
-    const {page} = props;
-
-    const products = DUMMY_PRODUCTS;
+    const {page, filters} = props;
 
     const offset = (page - 1) * PAGE_SIZE;
-    const totalProducts = products.items?.length ?? 0;
+
+    const { data, loading, error, refetch } = useQuery(FETCH_PRODUCTS, {
+        variables: { ...filters, status: filters.status || null, offset, limit: PAGE_SIZE }
+    })
+
+    const products = data?.products?.items || [];
+
+    const paginatedProducts = products.slice(offset, offset+PAGE_SIZE);
+
+    const totalProducts = products?.length ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalProducts / PAGE_SIZE));
 
     const getStatusCell = (status:string) => {
@@ -57,7 +58,6 @@ export default function ProductsTable(props:ProductsTableProps) {
         );
     }
 
-
     return (
         <section className="bg-white rounded-2xl shadow overflow-hidden">
             
@@ -74,10 +74,10 @@ export default function ProductsTable(props:ProductsTableProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.items.length === 0 && (
+                        {paginatedProducts?.length === 0 && (
                             <tr><td colSpan={6} className="p-4 text-md text-center text-slate-700">No results</td></tr>
                         )}
-                        {products.items.map((product:any) => (
+                        {paginatedProducts?.map((product:any) => (
                             <tr
                                 key={product.id}
                                 onClick={() => props.onRowClick(product.id)}
@@ -98,7 +98,7 @@ export default function ProductsTable(props:ProductsTableProps) {
             <div className="flex items-center justify-between p-3 border-t">
                 <div className="text-sm text-slate-500">
                     Page {page} of {totalPages}
-                    <span className='hidden md:inline ml-8'>Products {offset*PAGE_SIZE +1} to {Math.min(totalProducts, (offset+1)*PAGE_SIZE)}</span>
+                    <span className='hidden md:inline ml-8'>Products {offset + 1} to {Math.min(totalProducts, offset+PAGE_SIZE)}</span>
                 </div>
 
                 <div className="flex gap-2">

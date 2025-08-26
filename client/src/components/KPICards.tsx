@@ -12,6 +12,8 @@ const KPICard = ({ label, value }: { label: string, value: string }) => (
 )
 
 export default function KPICards({ totalStock, totalDemand, fillRate }: KPICardsProps) {
+  if(!totalStock || !totalDemand) return null;
+
   return (
     <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <KPICard label="Total Stock" value={totalStock.toLocaleString()} />
