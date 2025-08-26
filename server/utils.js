@@ -1,3 +1,9 @@
+export function getProductStatus(product) {
+    if (product.stock > product.demand) return 'HEALTHY';
+    else if(product.stock < product.demand)   return 'CRITICAL';
+    else  return 'LOW';
+}
+
 export function getKPIs(products) {
     const totalStock = products.reduce((sum, product) => sum + product.stock, 0);
     const totalDemand = products.reduce((sum, product) => sum + product.demand, 0);

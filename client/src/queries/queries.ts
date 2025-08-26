@@ -11,3 +11,13 @@ export const FETCH_KPIS = gql`
     warehouses
   }
 `;
+
+export const FETCH_PRODUCTS = gql`
+  query Products($search: String, $warehouse: String, $status: Status, $offset: Int!, $limit: Int!) {
+    products(search: $search, warehouse: $warehouse, status: $status, offset: $offset, limit: $limit) {
+      items {
+        id name sku warehouse stock demand status
+      }
+    }
+  }
+`;

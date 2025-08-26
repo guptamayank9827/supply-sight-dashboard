@@ -30,11 +30,33 @@ function App() {
     { search, warehouse, status }
   ), [search, warehouse, status]);
 
+  // handlers
   const handleRangeChange = (newRange:number) => {
     if(newRange === range)  return;
 
     setRange(newRange);
     refetch({range:newRange});
+  }
+
+  const handleSearchChange = (newSearch:string) => {
+    if(newSearch === search)  return;
+
+    setSearch(newSearch);
+    setPage(1);
+  }
+
+  const handleWarehouseChange = (newWarehouse:string) => {
+    if(newWarehouse === warehouse)  return;
+
+    setWarehouse(newWarehouse);
+    setPage(1);
+  }
+
+  const handleStatusChange = (newStatus:StatusType|"") => {
+    if(newStatus === status)  return;
+
+    setStatus(newStatus);
+    setPage(1);
   }
 
 
@@ -64,9 +86,9 @@ function App() {
           warehouse={warehouse}
           status={status}
           warehouses={warehouses}
-          setSearch={setSearch}
-          setWarehouse={setWarehouse}
-          setStatus={setStatus}
+          setSearch={handleSearchChange}
+          setWarehouse={handleWarehouseChange}
+          setStatus={handleStatusChange}
         />
 
         <ProductsTable
