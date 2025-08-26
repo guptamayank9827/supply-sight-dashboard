@@ -21,3 +21,9 @@ export const FETCH_PRODUCTS = gql`
     }
   }
 `;
+
+export const FETCH_PRODUCT = gql`
+  query Product($id: ID!) {
+    product(id: $id) { id name sku warehouse stock demand status }
+  }
+`;

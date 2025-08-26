@@ -1,16 +1,20 @@
+import { useQuery } from '@apollo/client';
+import { FETCH_PRODUCT } from '../queries/queries';
+
 type DrawerProps = {
     productId: string | null;
     warehouses: string[];
     onClose: () => void;
 };
 
-const DUMMY_PRODUCT = {demand: 120, id:"P-1001", name:"12mm Hex Bolt", sku:"HEX-12-100", status:"HEALTHY", stock:180, warehouse:"BLR-A"};
 
 export default function Drawer(props:DrawerProps) {
     const { productId, warehouses } = props;
-
     const open = !!productId;
-    const product = DUMMY_PRODUCT;
+
+    const { data, loading, error, refetch } = useQuery(FETCH_PRODUCT, { variables: { id:productId }, skip: !open });
+
+    const product = data?.product;
 
     if (!open || !product) return null;
 
@@ -42,6 +46,8 @@ export default function Drawer(props:DrawerProps) {
         <div className="fixed inset-0 z-20">
             <div className="absolute inset-0 bg-black/20" onClick={props.onClose} />
             <aside className="absolute right-0 top-0 h-full w-full sm:w-[28rem] bg-white shadow-xl p-4 overflow-y-auto">
+                {loading && <div className="text-sm text-slate-600">Loading…</div>}
+                {error && <div className="text-sm text-red-600">Error: {error.message}</div>}
                 {product && (
                     <div className="space-y-6">
                         <header className="flex items-center justify-between">
