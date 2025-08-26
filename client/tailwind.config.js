@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        brandBlue: "#17263e"
+        brandBlue: "#17263e",
+        error: "#ff0000"
       }
     },
   },

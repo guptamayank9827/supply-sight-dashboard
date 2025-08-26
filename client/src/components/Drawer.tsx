@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { FETCH_PRODUCT, UPDATE_DEMAND } from '../queries/queries';
+import { FETCH_PRODUCT, UPDATE_DEMAND, TRANSFER_STOCK } from '../queries/queries';
 
 type DrawerProps = {
     productId: string | null;
@@ -9,11 +10,15 @@ type DrawerProps = {
 
 
 export default function Drawer(props:DrawerProps) {
+    const [showUpdateError, setShowUpdateError] = useState<boolean>(false);
+    const [showTransferError, setShowTransferError] = useState<boolean>(false);
+
     const { productId, warehouses } = props;
     const open = !!productId;
 
     const { data, loading, error, refetch } = useQuery(FETCH_PRODUCT, { variables: { id:productId }, skip: !open });
     const [updateDemand] = useMutation(UPDATE_DEMAND);
+    const [transferStock] = useMutation(TRANSFER_STOCK);
 
     const product = data?.product;
 
@@ -29,13 +34,17 @@ export default function Drawer(props:DrawerProps) {
 
         const demand = parseInt((data.get('demand') as string) || '0', 10) || 0;
 
-        if(!demand) return null;
+        if(!demand) {
+            setShowUpdateError(true);
+            return null;
+        }
+        setShowUpdateError(false);
 
         await updateDemand({ variables: { id: product.id, demand } });
         await refetch();
     }
 
-    const handleTransferStock = (event:React.FormEvent<HTMLFormElement>) => {
+    const handleTransferStock = async (event:React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         
         const form = event.target as HTMLFormElement
@@ -43,8 +52,15 @@ export default function Drawer(props:DrawerProps) {
         const quantity = parseInt((data.get('quantity') as string) || '0', 10) || 0;
         const toWarehouse = (data.get('toWarehouse') as string) || '';
         
-        if(!quantity || !toWarehouse)   return;
-        console.log("transfer stock");
+        if(!quantity || !toWarehouse)   {
+            setShowTransferError(true);
+            return null;
+        }
+
+        setShowTransferError(false);
+
+        await transferStock({ variables: { id: product.id, quantity, toWarehouse } });
+        await refetch();
     }
 
     return(
@@ -96,6 +112,9 @@ export default function Drawer(props:DrawerProps) {
                                 <input name="demand" type="number" min={0} defaultValue={product.demand} className="border rounded-xl px-3 py-2 w-40" />
                                 <button className="px-3 py-2 rounded-xl bg-brandBlue text-white">Save</button>
                             </form>
+                            {showUpdateError &&
+                                <div className='text-error'>Enter a Valid Demand value</div>
+                            }
                         </section>
 
                         <section className="border rounded-xl p-4">
@@ -114,6 +133,9 @@ export default function Drawer(props:DrawerProps) {
                                 <div className="col-span-2">
                                     <button className="w-full px-3 py-2 rounded-xl bg-brandBlue text-white">Transfer</button>
                                 </div>
+                                {showTransferError &&
+                                    <div className='text-error'>Enter both fields</div>
+                                }
                             </form>
                         </section>
 

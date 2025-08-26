@@ -15,11 +15,13 @@ const PAGE_SIZE = 10;
 
 export default function ProductsTable(props:ProductsTableProps) {
     const {page, filters} = props;
+
     const offset = (page - 1) * PAGE_SIZE;
 
     const { data, loading, error, refetch } = useQuery(FETCH_PRODUCTS, {
         variables: { ...filters, status: filters.status || null, offset, limit: PAGE_SIZE }
     })
+
     const products = data?.products?.items || [];
 
     const paginatedProducts = products.slice(offset, offset+PAGE_SIZE);

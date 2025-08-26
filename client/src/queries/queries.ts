@@ -33,3 +33,9 @@ export const UPDATE_DEMAND = gql`
     updateDemand(id: $id, demand: $demand) { id demand stock status }
   }
 `;
+
+export const TRANSFER_STOCK = gql`
+  mutation TransferStock($id: ID!, $quantity: Int!, $toWarehouse: String!) {
+    transferStock(id: $id, quantity: $quantity, toWarehouse: $toWarehouse) { id stock warehouse status }
+  }
+`;

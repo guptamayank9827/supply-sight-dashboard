@@ -58,6 +58,38 @@ export const resolvers = {
       products[idx] = { ...products[idx], demand };
 
       return products[idx];
+    },
+
+    transferStock: (_, { id, quantity, toWarehouse }) => {
+      if (quantity <= 0) throw new Error('Quantity must be positive');
+
+      const idx = products.findIndex(product => product.id === id);
+      if (idx === -1) throw new Error('Product not found');
+
+      // Decrement stock from source product
+      const source = products[idx];
+      if (source.stock < quantity) throw new Error('Insufficient stock to transfer');
+      source.stock -= quantity;
+
+      // If a product with same sku exists at destination warehouse, add stock; else create a sibling product
+      const targetIdx = products.findIndex(product => product.sku === source.sku && product.warehouse === toWarehouse);
+      if (targetIdx !== -1) {
+        products[targetIdx].stock += quantity;
+      }
+      else {
+        const newId = 'P-' + Math.floor(1000 + Math.random() * 9000);
+        const newProd = {
+          ...source,
+          id: newId,
+          warehouse: toWarehouse,
+          stock: quantity,
+          demand: quantity
+        };
+
+        products.push(newProd);
+      }
+
+      return source;
     }
   }
 

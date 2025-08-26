@@ -42,6 +42,6 @@ export const typeDefs = `#graphql
 
     type Mutation {
         updateDemand(id: ID!, demand: Int!): Product!
-        transferStock(id: ID!, amount: Int!, toWarehouse: String!): Product!
+        transferStock(id: ID!, quantity: Int!, toWarehouse: String!): Product!
     }
 `;
