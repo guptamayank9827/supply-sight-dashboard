@@ -6,7 +6,7 @@ import TrendChart from './components/TrendChart';
 import Filters from './components/Filters';
 import ProductsTable from './components/ProductsTable';
 
-import {StatusType} from './types/types';
+import { StatusType, PointType } from './types/types';
 
 const DEFAULT_RANGE = 7;
 
@@ -23,6 +23,13 @@ const DUMMY_WAREHOUSES = [
   "PNQ-C"
 ];
 
+const DUMMY_CHARTPOINTS:PointType[] = [
+  { date: "2025-08-22", stock: 470, demand: 450 },
+  { date: "2025-08-23", stock: 450, demand: 500 },
+  { date: "2025-08-24", stock: 475, demand: 550 },
+  { date: "2025-08-25", stock: 500, demand: 600 }
+];
+
 function App() {
   // state
   const [range, setRange] = useState<number>(DEFAULT_RANGE);
@@ -32,6 +39,7 @@ function App() {
 
   const kpis = DUMMY_KPIS;
   const warehouses = DUMMY_WAREHOUSES;
+  const chartPoints = DUMMY_CHARTPOINTS;
 
   return(
     <div className="min-h-screen">
@@ -44,7 +52,12 @@ function App() {
           <KPICards totalStock={kpis.totalStock} totalDemand={kpis.totalDemand} fillRate={kpis.fillRate} />
         }
 
-        <TrendChart />
+        {chartPoints &&
+          <div className="bg-white rounded-2xl p-4 shadow">
+              <h2 className="text-brandBlue text-xl font-semibold mb-3">Stock vs Demand</h2>
+              <TrendChart points={chartPoints} />
+          </div>
+        }
 
         <Filters
           search={search}
