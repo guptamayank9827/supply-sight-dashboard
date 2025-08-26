@@ -101,7 +101,7 @@ function App() {
         <Drawer
           productId={selectedProduct}
           warehouses={warehouses}
-          onClose={() => setSelectedProduct(null)}
+          onClose={() => {setSelectedProduct(null); refetch({range}); }}
         />
 
       </main>

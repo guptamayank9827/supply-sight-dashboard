@@ -41,11 +41,23 @@ export const resolvers = {
     product: (_, { id }) => {
       let product = products.find(product => product.id === id) || null;
 
-      if(!product)  return null;
+      if(!product)  throw new Error('Product not found');
 
       product.status = getProductStatus(product);
       
       return product;
+    }
+  },
+
+  Mutation: {
+    updateDemand: (_, { id, demand }) => {
+      const idx = products.findIndex(product => product.id === id);
+
+      if (idx < 0) throw new Error('Product not found');
+
+      products[idx] = { ...products[idx], demand };
+
+      return products[idx];
     }
   }
 

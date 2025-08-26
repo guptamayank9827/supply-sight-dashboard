@@ -27,3 +27,9 @@ export const FETCH_PRODUCT = gql`
     product(id: $id) { id name sku warehouse stock demand status }
   }
 `;
+
+export const UPDATE_DEMAND = gql`
+  mutation UpdateDemand($id: ID!, $demand: Int!) {
+    updateDemand(id: $id, demand: $demand) { id demand stock status }
+  }
+`;

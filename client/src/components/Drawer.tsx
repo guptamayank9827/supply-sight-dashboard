@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/client';
-import { FETCH_PRODUCT } from '../queries/queries';
+import { useQuery, useMutation } from '@apollo/client';
+import { FETCH_PRODUCT, UPDATE_DEMAND } from '../queries/queries';
 
 type DrawerProps = {
     productId: string | null;
@@ -13,24 +13,29 @@ export default function Drawer(props:DrawerProps) {
     const open = !!productId;
 
     const { data, loading, error, refetch } = useQuery(FETCH_PRODUCT, { variables: { id:productId }, skip: !open });
+    const [updateDemand] = useMutation(UPDATE_DEMAND);
 
     const product = data?.product;
 
     if (!open || !product) return null;
 
-    const updateDemand = (event:React.FormEvent<HTMLFormElement>) => {
+
+
+    const handleUpdateDemand = async (event:React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const form = event.target as HTMLFormElement
         const data = new FormData(form);
 
         const demand = parseInt((data.get('demand') as string) || '0', 10) || 0;
-        
+
         if(!demand) return null;
-        console.log("update demand");
+
+        await updateDemand({ variables: { id: product.id, demand } });
+        await refetch();
     }
 
-    const transferStock = (event:React.FormEvent<HTMLFormElement>) => {
+    const handleTransferStock = (event:React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         
         const form = event.target as HTMLFormElement
@@ -86,7 +91,7 @@ export default function Drawer(props:DrawerProps) {
                             <h4 className="font-semibold mb-3">Update Demand</h4>
                             <form
                                 className="flex gap-3"
-                                onSubmit={(e) => updateDemand(e)}
+                                onSubmit={(e) => handleUpdateDemand(e)}
                             >
                                 <input name="demand" type="number" min={0} defaultValue={product.demand} className="border rounded-xl px-3 py-2 w-40" />
                                 <button className="px-3 py-2 rounded-xl bg-brandBlue text-white">Save</button>
@@ -97,7 +102,7 @@ export default function Drawer(props:DrawerProps) {
                             <h4 className="font-semibold mb-3">Transfer Stock</h4>
                             <form
                                 className="grid grid-cols-2 gap-3"
-                                onSubmit={(e) => transferStock(e)}
+                                onSubmit={(e) => handleTransferStock(e)}
                             >
                                 <input name="quantity" type="number" min={1} placeholder="Quantity" className="border rounded-xl px-3 py-2" />
                                 <select name="toWarehouse" className="border rounded-xl px-3 py-2">
