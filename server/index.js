@@ -4,23 +4,11 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 
+import { typeDefs } from './schema.js';
+import { resolvers } from './resolvers.js';
+
 const json = bodyParser.json;
 const PORT = process.env.PORT || 4000;
-
-// SCHEMA
-const typeDefs = `#graphql
-    type Query {
-        hello: String
-    }
-`;
-
-
-// RESOLVERS
-const resolvers = {
-    Query: {
-        hello: () => 'Hello from Apollo Server!'
-    }
-};
 
 
 async function start() {
