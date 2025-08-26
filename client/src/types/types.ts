@@ -1,0 +1,1 @@
+export type StatusType = 'HEALTHY' | 'LOW' | 'CRITICAL';
