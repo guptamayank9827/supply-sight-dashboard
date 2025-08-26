@@ -8,6 +8,13 @@ import ProductsTable from './components/ProductsTable';
 
 const DEFAULT_RANGE = 7;
 
+// Dummy Data
+const KPIS = {
+  totalStock: 500,
+  totalDemand: 600,
+  fillRate: 5/6
+};
+
 function App() {
   // state
   const [range, setRange] = useState<number>(DEFAULT_RANGE);
@@ -19,7 +26,9 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <KPICards />
+        {KPIS &&
+          <KPICards totalStock={KPIS.totalStock} totalDemand={KPIS.totalDemand} fillRate={KPIS.fillRate} />
+        }
 
         <TrendChart />
 
