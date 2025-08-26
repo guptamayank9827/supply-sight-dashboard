@@ -5,6 +5,7 @@ import KPICards from './components/KPICards';
 import TrendChart from './components/TrendChart';
 import Filters from './components/Filters';
 import ProductsTable from './components/ProductsTable';
+import Drawer from "./components/Drawer";
 
 import { StatusType, PointType } from './types/types';
 
@@ -37,6 +38,8 @@ function App() {
   const [warehouse, setWarehouse] = useState<string>('');
   const [status, setStatus] = useState<StatusType | ''>('');
   const [page, setPage] = useState<number>(1);
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+
 
   const filters = useMemo(() => (
     { search, warehouse, status }
@@ -78,6 +81,13 @@ function App() {
           page={page}
           filters={filters}
           setPage={setPage}
+          onRowClick={(productId) => setSelectedProduct(productId)}
+        />
+
+        <Drawer
+          productId={selectedProduct}
+          warehouses={warehouses}
+          onClose={() => setSelectedProduct(null)}
         />
 
       </main>

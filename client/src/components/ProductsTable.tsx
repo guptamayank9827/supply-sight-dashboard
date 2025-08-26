@@ -4,6 +4,7 @@ type ProductsTableProps = {
     page: number;
     filters: FiltersType;
     setPage: (pageNum:number) => void;
+    onRowClick: (id:string) => void;
 };
 
 const PAGE_SIZE = 10;
@@ -79,6 +80,7 @@ export default function ProductsTable(props:ProductsTableProps) {
                         {products.items.map((product:any) => (
                             <tr
                                 key={product.id}
+                                onClick={() => props.onRowClick(product.id)}
                                 className={`cursor-pointer hover:bg-slate-50 ${product.status === 'CRITICAL' ? 'bg-red-50' : ''}`}
                             >
                                 <td className="p-3">{product.name}</td>
