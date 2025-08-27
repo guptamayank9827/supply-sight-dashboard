@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 
 import { FiltersType } from '../types/types';
@@ -6,6 +7,8 @@ import { FETCH_PRODUCTS } from '../queries/queries';
 type ProductsTableProps = {
     page: number;
     filters: FiltersType;
+    refresh: boolean;
+    updateRefresh: () => void;
     setPage: (pageNum:number) => void;
     onRowClick: (id:string) => void;
 };
@@ -14,7 +17,7 @@ const PAGE_SIZE = 10;
 
 
 export default function ProductsTable(props:ProductsTableProps) {
-    const {page, filters} = props;
+    const {page, filters, refresh} = props;
 
     const offset = (page - 1) * PAGE_SIZE;
 
@@ -28,6 +31,13 @@ export default function ProductsTable(props:ProductsTableProps) {
 
     const totalProducts = products?.length ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalProducts / PAGE_SIZE));
+
+    useEffect(() => {
+        if(!refresh)    return;
+        
+        refetch();
+        props.updateRefresh();
+    }, [refresh]);
 
     const getStatusCell = (status:string) => {
         let statusClass = "", statusText = "";

@@ -20,6 +20,8 @@ function App() {
   const [status, setStatus] = useState<StatusType | ''>('');
   const [page, setPage] = useState<number>(1);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [refreshTable, setRefreshTable] = useState<boolean>(false);
+
 
   const { data, loading, error, refetch } = useQuery(FETCH_KPIS, { variables: { range } });
   const kpis = data?.kpis || [];
@@ -94,6 +96,8 @@ function App() {
         <ProductsTable
           page={page}
           filters={filters}
+          refresh={refreshTable}
+          updateRefresh={() => setRefreshTable(false)}
           setPage={setPage}
           onRowClick={(productId) => setSelectedProduct(productId)}
         />
@@ -101,7 +105,7 @@ function App() {
         <Drawer
           productId={selectedProduct}
           warehouses={warehouses}
-          onClose={() => {setSelectedProduct(null); refetch({range}); }}
+          onClose={() => {setSelectedProduct(null); refetch({range}); setRefreshTable(true); }}
         />
 
       </main>
