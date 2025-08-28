@@ -1,5 +1,7 @@
 export type StatusType = 'HEALTHY' | 'LOW' | 'CRITICAL';
 
+export type MessageType = 'success' | 'error' | null;
+
 export type PointType = {
     date: string;
     stock: number;

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { FETCH_PRODUCT, UPDATE_DEMAND, TRANSFER_STOCK } from '../queries/queries';
+import { MessageType } from '../types/types';
 
 type DrawerProps = {
     productId: string | null;
     warehouses: string[];
     onClose: () => void;
+    setMessage: (message:string|null, type:MessageType) => void;
 };
 
 
@@ -42,6 +44,8 @@ export default function Drawer(props:DrawerProps) {
 
         await updateDemand({ variables: { id: product.id, demand } });
         await refetch();
+
+        props.setMessage(`Updated demand to ${demand}`, "success");
     }
 
     const handleTransferStock = async (event:React.FormEvent<HTMLFormElement>) => {
@@ -61,6 +65,8 @@ export default function Drawer(props:DrawerProps) {
 
         await transferStock({ variables: { id: product.id, quantity, toWarehouse } });
         await refetch();
+
+        props.setMessage(`Successfully transferred ${quantity} to ${toWarehouse}`, "success");
     }
 
     return(
