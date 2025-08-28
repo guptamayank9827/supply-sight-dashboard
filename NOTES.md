@@ -1,5 +1,8 @@
 # NOTES
 
+## [GitHub Link](https://github.com/guptamayank9827/supply-sight-dashboard)
+https://github.com/guptamayank9827/supply-sight-dashboard
+
 ## Major Decisions & Trade-offs
 - **Monorepo**: Makes it easy to run dev for both server and client together and to ship a single production server that serves static assets.
 
