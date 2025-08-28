@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { FETCH_PRODUCT, UPDATE_DEMAND, TRANSFER_STOCK } from '../queries/queries';
 import { MessageType } from '../types/types';
@@ -22,10 +22,13 @@ export default function Drawer(props:DrawerProps) {
     const [updateDemand] = useMutation(UPDATE_DEMAND);
     const [transferStock] = useMutation(TRANSFER_STOCK);
 
+    useEffect(() => {
+        if(error)   props.setMessage(`Error fetching product details for ${productId}`, "error");
+    }, [error]);
+    
     const product = data?.product;
 
     if (!open || !product) return null;
-
 
 
     const handleUpdateDemand = async (event:React.FormEvent<HTMLFormElement>) => {
@@ -74,79 +77,82 @@ export default function Drawer(props:DrawerProps) {
             <div className="absolute inset-0 bg-black/20" onClick={props.onClose} />
             <aside className="absolute right-0 top-0 h-full w-full sm:w-[28rem] bg-white shadow-xl p-4 overflow-y-auto">
                 {loading && <div className="text-sm text-slate-600">Loading…</div>}
-                {error && <div className="text-sm text-red-600">Error: {error.message}</div>}
-                {product && (
-                    <div className="space-y-6">
-                        <header className="flex items-center justify-between">
-                            <h3 className="text-xl font-semibold">{product.name}</h3>
-                            <button className="p-2 hover:bg-slate-100" onClick={props.onClose}>✕</button>
-                        </header>
 
-                        <dl className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                                <dt className="text-slate-500">ID</dt>
-                                <dd className="font-medium">{product.id}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-slate-500">SKU</dt>
-                                <dd className="font-medium">{product.sku}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-slate-500">Warehouse</dt>
-                                <dd className="font-medium">{product.warehouse}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-slate-500">Status</dt>
-                                <dd className="font-medium">{product.status}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-slate-500">Stock</dt>
-                                <dd className="font-medium">{product.stock}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-slate-500">Demand</dt>
-                                <dd className="font-medium">{product.demand}</dd>
-                            </div>
-                        </dl>
+                <div className="space-y-6">
+                    <header className="flex items-center justify-between">
+                        <h3 className="text-xl font-semibold">{product?.name || "--"}</h3>
+                        <button className="p-2 hover:bg-slate-100" onClick={props.onClose}>✕</button>
+                    </header>
 
-                        <section className="border rounded-xl p-4">
-                            <h4 className="font-semibold mb-3">Update Demand</h4>
-                            <form
-                                className="flex gap-3"
-                                onSubmit={(e) => handleUpdateDemand(e)}
-                            >
-                                <input name="demand" type="number" min={0} defaultValue={product.demand} className="border rounded-xl px-3 py-2 w-40" />
-                                <button className="px-3 py-2 rounded-xl bg-brandBlue text-white">Save</button>
-                            </form>
-                            {showUpdateError &&
-                                <div className='text-error'>Enter a Valid Demand value</div>
-                            }
-                        </section>
+                    <dl className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <dt className="text-slate-500">ID</dt>
+                            <dd className="font-medium">{product?.id || "-"}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-slate-500">SKU</dt>
+                            <dd className="font-medium">{product?.sku || "-"}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-slate-500">Warehouse</dt>
+                            <dd className="font-medium">{product?.warehouse || "-"}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-slate-500">Status</dt>
+                            <dd className="font-medium">{product?.status || "-"}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-slate-500">Stock</dt>
+                            <dd className="font-medium">{product?.stock || "-"}</dd>
+                        </div>
+                        <div>
+                            <dt className="text-slate-500">Demand</dt>
+                            <dd className="font-medium">{product?.demand || "-"}</dd>
+                        </div>
+                    </dl>
 
-                        <section className="border rounded-xl p-4">
-                            <h4 className="font-semibold mb-3">Transfer Stock</h4>
-                            <form
-                                className="grid grid-cols-2 gap-3"
-                                onSubmit={(e) => handleTransferStock(e)}
-                            >
-                                <input name="quantity" type="number" min={1} placeholder="Quantity" className="border rounded-xl px-3 py-2" />
-                                <select name="toWarehouse" className="border rounded-xl px-3 py-2">
-                                    <option value="">Select Warehouse</option>
-                                    {warehouses?.map((warehouse: string) => (
-                                        <option key={warehouse} value={warehouse} disabled={warehouse === product.warehouse}>{warehouse}</option>
-                                    ))}
-                                </select>
-                                <div className="col-span-2">
-                                    <button className="w-full px-3 py-2 rounded-xl bg-brandBlue text-white">Transfer</button>
-                                </div>
-                                {showTransferError &&
-                                    <div className='text-error'>Enter both fields</div>
+                    {product &&
+                        <>
+                            <section className="border rounded-xl p-4">
+                                <h4 className="font-semibold mb-3">Update Demand</h4>
+                                <form
+                                    className="flex gap-3"
+                                    onSubmit={(e) => handleUpdateDemand(e)}
+                                >
+                                    <input name="demand" type="number" min={0} defaultValue={product.demand} className="border rounded-xl px-3 py-2 w-40" />
+                                    <button className="px-3 py-2 rounded-xl bg-brandBlue text-white">Save</button>
+                                </form>
+                                {showUpdateError &&
+                                    <div className='text-error'>Enter a Valid Demand value</div>
                                 }
-                            </form>
-                        </section>
+                            </section>
+
+                            <section className="border rounded-xl p-4">
+                                <h4 className="font-semibold mb-3">Transfer Stock</h4>
+                                <form
+                                    className="grid grid-cols-2 gap-3"
+                                    onSubmit={(e) => handleTransferStock(e)}
+                                >
+                                    <input name="quantity" type="number" min={1} placeholder="Quantity" className="border rounded-xl px-3 py-2" />
+                                    <select name="toWarehouse" className="border rounded-xl px-3 py-2">
+                                        <option value="">Select Warehouse</option>
+                                        {warehouses?.map((warehouse: string) => (
+                                            <option key={warehouse} value={warehouse} disabled={warehouse === product.warehouse}>{warehouse}</option>
+                                        ))}
+                                    </select>
+                                    <div className="col-span-2">
+                                        <button className="w-full px-3 py-2 rounded-xl bg-brandBlue text-white">Transfer</button>
+                                    </div>
+                                    {showTransferError &&
+                                        <div className='text-error'>Enter both fields</div>
+                                    }
+                                </form>
+                            </section>
+                        </>
+                    }
 
                     </div>
-                )}
+
             </aside>
         </div>
     );
